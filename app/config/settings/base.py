@@ -28,6 +28,9 @@ secrets = json.loads(open(SECRET_BASE).read())
 for key, value in secrets.items():
     setattr(sys.modules[__name__], key, value)
 
+# Auth
+AUTH_USER_MODEL = 'members.User'
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,6 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    'members',
 ]
 
 MIDDLEWARE = [
