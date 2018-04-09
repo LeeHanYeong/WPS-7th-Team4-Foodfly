@@ -1,2 +1,5 @@
 Django
 django-extensions
+djangorestframework
+drf-writable-nested
+Pillow
