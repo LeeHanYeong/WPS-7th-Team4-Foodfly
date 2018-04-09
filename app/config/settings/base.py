@@ -30,6 +30,33 @@ for key, value in secrets.items():
 
 # Auth
 AUTH_USER_MODEL = 'members.User'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'members.backends.EmailBackend',
+]
+
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.JSONParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DATE_FORMAT': '%Y.%m.%d',
+    'DATE_INPUT_FORMATS': [
+        '%Y.%m.%d',
+    ],
+    'TIME_FORMAT': '%H:%M',
+    'TIME_INPUT_FORMATS': [
+        '%H:%M',
+    ],
+}
 
 # Application definition
 INSTALLED_APPS = [

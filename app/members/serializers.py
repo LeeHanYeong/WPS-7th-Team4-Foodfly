@@ -1,9 +1,11 @@
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from .models import User
 
 __all__ = (
     'UserSerializer',
+    'EmailAuthTokenSerializer',
     'SignupSerializer',
 )
 
@@ -13,11 +15,28 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'pk',
-            'username',
-            'user_type',
             'email',
             'img_profile',
         )
+
+
+class EmailAuthTokenSerializer(serializers.Serializer):
+    email = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        if email and password:
+            user = authenticate(username=email, password=password, request=self.context.get('request'))
+            if not user:
+                raise serializers.ValidationError('자격인증정보가 올바르지 않습니다')
+        else:
+            raise serializers.ValidationError('이메일과 비밀번호를 입력해주세요')
+
+        attrs['user'] = user
+        return attrs
 
 
 class SignupSerializer(serializers.ModelSerializer):
