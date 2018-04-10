@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
 
     'members',
+    'restaurants',
 ]
 
 MIDDLEWARE = [
