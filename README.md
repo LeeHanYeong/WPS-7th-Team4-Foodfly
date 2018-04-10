@@ -20,9 +20,11 @@
 
 **Params**
 
-- email
-- password1
-- password2
+- **name**
+- **phone_number**
+- **email**
+- **password1**
+- **password2**
 
 **Result**
 
@@ -30,10 +32,12 @@
 {
     "user": {
         "pk": 2,
+        "name": "이한영",
+        "phone_number": "010-1234-1234",
         "email": "dev2@lhy.kr",
         "img_profile": null
     },
-    "token": "b78a4e8a7b5e9053559468b341e0b7f6108ec419"
+    "token": "c7c6ddd46faad6f1676458d2e8c8eadc42c3da00"
 }
 ```
 
@@ -50,19 +54,21 @@
 
 **Params**
 
-- email
-- password
+- **email**
+- **password**
 
 **Result**
 
 ```json
 {
     "user": {
-        "pk": 1,
-        "email": "dev@lhy.kr",
+        "pk": 2,
+        "name": "이한영",
+        "phone_number": "010-1234-1234",
+        "email": "dev2@lhy.kr",
         "img_profile": null
     },
-    "token": "235e29ae4ae294b54f369a3828190855517db1c7"
+    "token": "c7c6ddd46faad6f1676458d2e8c8eadc42c3da00"
 }
 ```
 
@@ -78,14 +84,16 @@
 
 **Method**
 
-`POST`
+`GET`
 
 **Result**
 
 ```json
 {
-    "pk": 1,
-    "email": "dev@lhy.kr",
+    "pk": 2,
+    "name": "이한영",
+    "phone_number": "010-1234-1234",
+    "email": "dev2@lhy.kr",
     "img_profile": null
 }
 ```

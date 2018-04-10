@@ -11,13 +11,20 @@ __all__ = (
 
 
 class UserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
             'pk',
+            'name',
+            'phone_number',
             'email',
             'img_profile',
         )
+
+    def get_phone_number(self, obj):
+        return obj.phone_number.as_national
 
 
 class EmailAuthTokenSerializer(serializers.Serializer):
@@ -29,7 +36,8 @@ class EmailAuthTokenSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if email and password:
-            user = authenticate(username=email, password=password, request=self.context.get('request'))
+            user = authenticate(username=email, password=password,
+                                request=self.context.get('request'))
             if not user:
                 raise serializers.ValidationError('자격인증정보가 올바르지 않습니다')
         else:
@@ -47,6 +55,8 @@ class SignupSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'pk',
+            'name',
+            'phone_number',
             'email',
             'password',
             'password_confirm',
@@ -72,7 +82,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = {
-            'user': super().to_representation(instance),
+            'user': UserSerializer(instance).data,
             'token': instance.token,
         }
         return ret

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.authtoken.models import Token
 
 __all__ = (
@@ -24,7 +25,11 @@ class User(AbstractUser):
         (USER_TYPE_DJANGO, 'Django'),
         (USER_TYPE_FACEBOOK, 'Facebook'),
     )
-    email = models.EmailField(unique=True, blank=True)
+    first_name = None
+    last_name = None
+    name = models.CharField(max_length=50)
+    phone_number = PhoneNumberField()
+    email = models.EmailField(unique=True)
     type = models.CharField(max_length=1, choices=CHOICES_USER_TYPE, default=USER_TYPE_DJANGO)
     img_profile = models.ImageField(upload_to='user', blank=True)
 
@@ -32,6 +37,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def get_full_name(self):
+        return self.name
+
+    def get_short_name(self):
+        return self.name
 
     @property
     def token(self):

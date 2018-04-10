@@ -58,6 +58,10 @@ REST_FRAMEWORK = {
     ],
 }
 
+# django-phonenumber-field
+# PHONENUMBER_DB_FORMAT = 'NATIONAL'
+PHONENUMBER_DEFAULT_REGION = 'KO'
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -70,6 +74,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'phonenumber_field',
 
     'members',
 ]
