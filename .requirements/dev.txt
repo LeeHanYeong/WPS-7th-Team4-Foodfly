@@ -1,7 +1,9 @@
 Django
 django-extensions
+django-filter
 django-phonenumber-field
 djangorestframework
 djangorestframework-camel-case
 drf-writable-nested
 Pillow
+psycopg2-binary

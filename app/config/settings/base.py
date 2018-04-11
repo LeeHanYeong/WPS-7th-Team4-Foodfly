@@ -59,6 +59,11 @@ REST_FRAMEWORK = {
     # 테스트시 JSON데이터를 기본으로 함
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 
+    # 필터 백엔드 설정
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+
     # date와 time의 포맷 설정
     'DATE_FORMAT': '%Y.%m.%d',
     'DATE_INPUT_FORMATS': [
