@@ -4,7 +4,17 @@ from ..models import (
     RestaurantCategory,
     RestaurantTag,
     RestaurantOrderType,
-    Restaurant)
+    Restaurant
+)
+from ..serializers.menu import MenuCategorySerializer
+
+__all__ = (
+    'RestaurantCategorySerializer',
+    'RestaurantTagSerializer',
+    'RestaurantOrderTypeSerializer',
+    'RestaurantListSerializer',
+    'RestaurantRetrieveSerializer',
+)
 
 
 class RestaurantCategorySerializer(serializers.ModelSerializer):
@@ -34,7 +44,11 @@ class RestaurantOrderTypeSerializer(serializers.ModelSerializer):
         )
 
 
-class RestaurantSerializer(serializers.ModelSerializer):
+class RestaurantListSerializer(serializers.ModelSerializer):
+    categories = RestaurantCategorySerializer(many=True, read_only=True)
+    tags = RestaurantTagSerializer(many=True, read_only=True)
+    order_types = RestaurantOrderTypeSerializer(many=True, read_only=True)
+
     class Meta:
         model = Restaurant
         fields = (
@@ -49,4 +63,13 @@ class RestaurantSerializer(serializers.ModelSerializer):
             'categories',
             'tags',
             'order_types',
+        )
+
+
+class RestaurantRetrieveSerializer(RestaurantListSerializer):
+    menu_categories = MenuCategorySerializer(many=True, read_only=True)
+
+    class Meta(RestaurantListSerializer.Meta):
+        fields = RestaurantListSerializer.Meta.fields + (
+            'menu_categories',
         )
