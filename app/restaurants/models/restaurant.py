@@ -2,6 +2,13 @@ import datetime
 
 from django.db import models
 
+__all__ = (
+    'RestaurantCategory',
+    'RestaurantTag',
+    'RestaurantOrderType',
+    'Restaurant',
+)
+
 
 class RestaurantCategory(models.Model):
     name = models.CharField(max_length=30)
