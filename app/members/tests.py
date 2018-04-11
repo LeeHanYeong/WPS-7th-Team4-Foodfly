@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
 from rest_framework import status
@@ -31,23 +33,24 @@ class SignupTest(APITestCase):
     def test_signup(self):
         data = {
             'name': self.TEST_NAME,
-            'phone_number': self.TEST_PHONE_NUMBER,
+            'phoneNumber': self.TEST_PHONE_NUMBER,
             'email': self.TEST_EMAIL,
             'password': self.TEST_PASSWORD,
-            'password_confirm': self.TEST_PASSWORD,
+            'passwordConfirm': self.TEST_PASSWORD,
         }
         response = self.client.post(self.URL, data)
 
         # response.data와 생성에 사용한 값 비교
+        response_data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['user']['email'], self.TEST_EMAIL)
-        self.assertEqual(response.data['user']['phone_number'], self.TEST_PHONE_NUMBER_REP)
-        self.assertEqual(response.data['user']['name'], self.TEST_NAME)
+        self.assertEqual(response_data['user']['email'], self.TEST_EMAIL)
+        self.assertEqual(response_data['user']['phoneNumber'], self.TEST_PHONE_NUMBER_REP)
+        self.assertEqual(response_data['user']['name'], self.TEST_NAME)
 
-        # response.data와 생성된 User의 속성 비교
-        user = User.objects.get(pk=response.data['user']['pk'])
-        self.assertEqual(response.data['user']['pk'], user.pk)
-        self.assertEqual(response.data['user']['email'], user.username)
-        self.assertEqual(response.data['user']['email'], user.email)
-        self.assertEqual(response.data['user']['phone_number'], user.phone_number.as_national)
-        self.assertEqual(response.data['user']['name'], user.name)
+        # response_data와 생성된 User의 속성 비교
+        user = User.objects.get(pk=response_data['user']['pk'])
+        self.assertEqual(response_data['user']['pk'], user.pk)
+        self.assertEqual(response_data['user']['email'], user.username)
+        self.assertEqual(response_data['user']['email'], user.email)
+        self.assertEqual(response_data['user']['phoneNumber'], user.phone_number.as_national)
+        self.assertEqual(response_data['user']['name'], user.name)

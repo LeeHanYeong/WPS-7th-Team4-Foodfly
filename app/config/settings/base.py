@@ -41,13 +41,25 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
+
+    # CamelCaseJSON관련 설정
     'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.MultiPartParser',
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
         'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+        # 'rest_framework.renderers.JSONRenderer',
     ),
+    'JSON_UNDERSCOREIZE': {
+        'no_underscore_before_number': True,
+    },
+
+    # 테스트시 JSON데이터를 기본으로 함
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+
+    # date와 time의 포맷 설정
     'DATE_FORMAT': '%Y.%m.%d',
     'DATE_INPUT_FORMATS': [
         '%Y.%m.%d',

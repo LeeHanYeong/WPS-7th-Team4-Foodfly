@@ -6,6 +6,7 @@ Django==2.0.4
 django-extensions==2.0.6
 django-phonenumber-field==2.0.0
 djangorestframework==3.8.2
+djangorestframework-camel-case==0.2.0
 drf-writable-nested==0.4.1
 future==0.16.0
 ipython==6.3.1

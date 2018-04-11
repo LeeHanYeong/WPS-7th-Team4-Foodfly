@@ -2,5 +2,6 @@ Django
 django-extensions
 django-phonenumber-field
 djangorestframework
+djangorestframework-camel-case
 drf-writable-nested
 Pillow

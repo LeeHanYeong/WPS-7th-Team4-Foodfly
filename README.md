@@ -1,5 +1,12 @@
 # FoodFly
 
+## 변경사항
+
+- 18.04.11
+	- 요청 / 응답의 키가 자바스크립트 명명 규칙을 따라 `lower_case_with_underscores(Snake Case)`에서 `CapitalizeWords by initial lowercase(Camel Case)`로 변경됩니다.
+		- `phone_number` -> `phoneNumber`
+		- `img_profile` -> `imgProfile`
+
 ## 기본정보
 
 **Base URL**  
@@ -21,7 +28,7 @@
 **Params**
 
 - **name**
-- **phone_number**
+- **phoneNumber**
 	- 국가번호가 필요합니다. ex) +82 010-0000-0000
 	- [국제전화 나라 번호](https://ko.wikipedia.org/wiki/%EA%B5%AD%EC%A0%9C%EC%A0%84%ED%99%94_%EB%82%98%EB%9D%BC_%EB%B2%88%ED%98%B8)를 참조하세요
 	- 돌려주는 데이터에서는 국가번호가 빠져있습니다.
@@ -36,9 +43,9 @@
     "user": {
         "pk": 2,
         "name": "이한영",
-        "phone_number": "010-1234-1234",
+        "phoneNumber": "010-1234-1234",
         "email": "dev2@lhy.kr",
-        "img_profile": null
+        "imgProfile": null
     },
     "token": "c7c6ddd46faad6f1676458d2e8c8eadc42c3da00"
 }
@@ -67,9 +74,9 @@
     "user": {
         "pk": 2,
         "name": "이한영",
-        "phone_number": "010-1234-1234",
+        "phoneNumber": "010-1234-1234",
         "email": "dev2@lhy.kr",
-        "img_profile": null
+        "imgProfile": null
     },
     "token": "c7c6ddd46faad6f1676458d2e8c8eadc42c3da00"
 }
@@ -95,8 +102,8 @@
 {
     "pk": 2,
     "name": "이한영",
-    "phone_number": "010-1234-1234",
+    "phoneNumber": "010-1234-1234",
     "email": "dev2@lhy.kr",
-    "img_profile": null
+    "imgProfile": null
 }
 ```
