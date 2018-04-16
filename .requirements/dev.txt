@@ -1,6 +1,7 @@
 Django
 django-extensions
 django-filter
+django-json-secrets
 django-phonenumber-field
 djangorestframework
 djangorestframework-camel-case

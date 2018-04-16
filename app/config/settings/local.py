@@ -1,8 +1,6 @@
 from .base import *
 
-secrets = json.loads(open(SECRET_LOCAL).read())
-for key, value in secrets.items():
-    setattr(sys.modules[__name__], key, value)
+import_secrets()
 
 DEBUG = True
 ALLOWED_HOSTS = [

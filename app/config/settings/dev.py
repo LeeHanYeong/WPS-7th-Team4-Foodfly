@@ -1,15 +1,8 @@
 from .base import *
 
-secrets = json.loads(open(SECRET_DEV).read())
-for key, value in secrets.items():
-    setattr(sys.modules[__name__], key, value)
+import_secrets()
 
 DEBUG = True
-ALLOWED_HOSTS = [
-    '.localhost',
-    '127.0.0.1',
-    '.lhy.kr',
-]
 WSGI_APPLICATION = 'config.wsgi.dev.application'
 
 # Static

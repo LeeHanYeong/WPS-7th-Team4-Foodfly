@@ -9,24 +9,17 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-import json
 import os
-import sys
+
+from djs import import_secrets
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-SECRET_DIR = os.path.join(ROOT_DIR, '.secrets')
-SECRET_BASE = os.path.join(SECRET_DIR, 'base.json')
-SECRET_LOCAL = os.path.join(SECRET_DIR, 'local.json')
-SECRET_DEV = os.path.join(SECRET_DIR, 'dev.json')
-SECRET_DEPLOY = os.path.join(SECRET_DIR, 'deploy.json')
 
-# secrets
-secrets = json.loads(open(SECRET_BASE).read())
-for key, value in secrets.items():
-    setattr(sys.modules[__name__], key, value)
+SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
+import_secrets()
 
 # Auth
 AUTH_USER_MODEL = 'members.User'
@@ -88,6 +81,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
@@ -98,6 +92,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
