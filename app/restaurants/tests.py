@@ -18,6 +18,7 @@ class RestaurantListTest(APITestCase):
     def create_restaurant(self, num):
         for i in range(num):
             self.MODEL.objects.create(
+                id=i,
                 name=self.TEST_RESTAURANT_NAME,
                 address=self.TEST_RESTAURANT_ADDRESS,
             )

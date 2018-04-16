@@ -1,6 +1,8 @@
 import datetime
 
-from django.db import models
+import requests
+from bs4 import BeautifulSoup
+from django.db import models, transaction
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
@@ -45,7 +47,43 @@ class RestaurantOrderType(models.Model):
         return self.name
 
 
+class RestaurantManager(models.Model):
+    def create_by_foodfly_id(self, foodfly_id):
+        url = f'http://www.foodfly.co.kr/restaurants/show/{id}'
+        soup = BeautifulSoup(requests.get(url).text, 'lxml')
+        return self.create_from_soup(foodfly_id, soup)
+
+    def create_from_soup(self, foodfly_id, soup):
+        with transaction.atomic():
+            top_box = soup.select_one('#restaurant-show > .top-box')
+            left_section = top_box.select_one('.left-section')
+            name = left_section.select_one('.main-info > h1').get_text(strip=True)
+            thumbnail = left_section.select_one('.main-info img.restaurant-thumbnail').get('src')
+            sub_info = left_section.select_one('.main-info .main-info-sub')
+            sub_info_dict = {
+                p.select('span')[0].get_text(strip=True): p.select('span')[1].get_text(strip=True)[
+                                                          2:]
+                for p in sub_info.select('p')
+            }
+            restaurant_info = soup.select_one('#restaurant-show > .restaurant-info')
+            info_p_list = [p.get_text(strip=True) for p in restaurant_info.select('p') if
+                           p.get_text(strip=True)]
+            info = '\n'.join(info_p_list)
+
+            restaurant_origin = soup.select('#restaurant-show > .bordered')[1]
+            origin = restaurant_origin.select_one('p').get_text()
+
+            restaurant = self.create(
+                id=foodfly_id,
+            )
+
+            menu_container = soup.select_one('#restaurant-show > .show-menu > .left-section')
+            category_list = []
+            category_list_soup = menu_container.select('.menu-category')
+
+
 class Restaurant(models.Model):
+    id = models.IntegerField('푸드플라이 레스토랑 ID', primary_key=True, unique=True)
     name = models.CharField('레스토랑명', max_length=100)
     address = models.CharField('주소', max_length=200)
     img_cover = models.ImageField('커버 이미지', upload_to='restaurant', blank=True)
@@ -75,6 +113,8 @@ class Restaurant(models.Model):
         related_name='restaurants',
         blank=True,
     )
+
+    objects = RestaurantManager()
 
     class Meta:
         verbose_name = '음식점'
