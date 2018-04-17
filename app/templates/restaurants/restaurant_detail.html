@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+	<h2>{{ object }}</h2>
+	<form action="" method="POST">
+		{% csrf_token %}
+		<button class="btn btn-primary">Refresh</button>
+	</form>
+	<table class="table">
+		{% for name, value in object.get_fields %}
+		<tr>
+			<td>{{ name }}</td>
+			{% if 'img' in name and value %}
+			<td><img src="/media/{{ value }}" alt=""></td>
+			{% else %}
+			<td>{{ value|linebreaksbr }}</td>
+			{% endif %}
+		</tr>
+		{% endfor %}
+		<tr>
+			<td>categories</td>
+			<td>{{ object.categories.all|join:', ' }}</td>
+		</tr>
+		<tr>
+			<td>tags</td>
+			<td>{{ object.tags.all|join:', ' }}</td>
+		</tr>
+		<tr>
+			<td>order_types</td>
+			<td>{{ object.order_types.all|join:', ' }}</td>
+		</tr>
+	</table>
+
+	<h2>메뉴</h2>
+	<table class="table">
+		{% for category in object.menu_categories.all %}
+		<tbody>
+			<tr>
+				<th colspan="2">{{ category.name }}</th>
+			</tr>
+			{% for menu in category.menus.all %}
+			<tr>
+				<td>{{ menu.name }}</td>
+				<td>{{ menu.price }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}

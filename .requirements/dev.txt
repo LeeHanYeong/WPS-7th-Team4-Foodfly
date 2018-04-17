@@ -1,4 +1,5 @@
 Django
+django-cors-headers
 django-extensions
 django-filter
 django-json-secrets
@@ -8,3 +9,5 @@ djangorestframework-camel-case
 drf-writable-nested
 Pillow
 psycopg2-binary
+requests
+selenium

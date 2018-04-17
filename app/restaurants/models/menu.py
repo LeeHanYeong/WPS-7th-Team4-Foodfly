@@ -2,7 +2,7 @@ from django.db import models, transaction
 
 
 class MenuCategoryManager(models.Manager):
-    def create_from_soup(self, restaurant, soup):
+    def update_or_create_from_soup(self, restaurant, soup):
         """
         :param soup:
             #restaurant-show
@@ -13,13 +13,13 @@ class MenuCategoryManager(models.Manager):
         """
         category_name = soup.select_one('.row-category').get_text(strip=True)
         with transaction.atomic():
-            category = self.create(
+            category, _ = self.update_or_create(
                 restaurant=restaurant,
                 name=category_name,
             )
             menu_soup_list = soup.select('.row-menu')
             for menu_soup in menu_soup_list:
-                Menu.objects.create_from_soup(category, menu_soup)
+                Menu.objects.update_or_create_from_soup(category, menu_soup)
 
 
 class MenuCategory(models.Model):
@@ -41,18 +41,20 @@ class MenuCategory(models.Model):
 
 
 class MenuManager(models.Manager):
-    def create_from_soup(self, category, soup):
+    def update_or_create_from_soup(self, category, soup):
         name = soup.select_one('.col-menu > strong').get_text(strip=True)
         info = soup.select_one('.col-menu > span').get_text(strip=True)
         photo_soup = soup.select_one('.col-photo > img')
         photo = photo_soup.get('src') if photo_soup else ''
         price = soup.select_one('.col-price > .price').get_text(strip=True).replace(',', '')
 
-        self.create(
+        self.update_or_create(
             category=category,
             name=name,
-            info=info,
-            price=price,
+            defaults={
+                'info': info,
+                'price': price,
+            }
         )
 
 
