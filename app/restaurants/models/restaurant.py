@@ -1,7 +1,7 @@
 import datetime
+import re
 import time
 
-import re
 import requests
 from bs4 import BeautifulSoup
 from django.core.files import File
@@ -76,26 +76,37 @@ class RestaurantOrderType(models.Model):
 
 
 class RestaurantManager(models.Manager):
-    def update_category(self, category: RestaurantCategory):
+    def update_all_restaurants(self, test=False):
+        for category_name, _ in RestaurantCategory.CHOICES_CATEGORIES:
+            category, _ = RestaurantCategory.objects.get_or_create(name=category_name)
+            self.update_category(category, test)
+
+    def update_category(self, category: RestaurantCategory, test=False):
+        print(f'- {category.name} update')
         url = f'http://www.foodfly.co.kr/restaurants?sortby=fee&category_{category.name}=on'
         client = webdriver.Chrome('/usr/local/bin/chromedriver')
         client.get(url)
         height = 0
-        while True:
-            client.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-            time.sleep(1)
-            body = client.find_element_by_css_selector('body')
-            cur_height = body.size['height']
-            if cur_height > height:
-                height = cur_height
-            else:
-                break
+        time.sleep(1)
+        if not test:
+            while True:
+                client.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+                time.sleep(1)
+                body = client.find_element_by_css_selector('body')
+                cur_height = body.size['height']
+                if cur_height > height:
+                    height = cur_height
+                else:
+                    break
         source = client.page_source
         soup = BeautifulSoup(source, 'lxml')
         a_list = soup.select('.restaurant-list > a')
         for a in a_list:
             pk = re.match(r'^.*/(?P<pk>\d+)', a.get('href', '')).group('pk').strip()
             name = a.select_one('.restaurant_info .restaurant_name').get_text(strip=True)
+            delivery_price = a.select(
+                '.restaurant_info > span')[-1].get_text(strip=True)[:-2].replace(',', '')
+            a.select_one('.restaurant_info > p:last-child').get_text(strip=True)
             bg = a.select_one('.restaurant_box span.restaurant_box_bg').get_text(strip=True)
             bg_hover = a.select_one('.restaurant_box span.restaurant_box_bg_hover').get_text(
                 strip=True)
@@ -104,7 +115,14 @@ class RestaurantManager(models.Manager):
             bg_hover_url = p.match(bg_hover).group('url')
 
             with transaction.atomic():
-                restaurant, _ = self.get_or_create(id=pk, name=name)
+                restaurant, _ = self.update_or_create(
+                    id=pk,
+                    defaults={
+                        'name': name,
+                        'delivery_price': delivery_price,
+                    },
+                )
+                restaurant.categories.add(category)
 
                 temp_file = download(bg_url)
                 ext = get_buffer_ext(temp_file)
@@ -112,7 +130,8 @@ class RestaurantManager(models.Manager):
 
                 temp_file = download(bg_hover_url)
                 ext = get_buffer_ext(temp_file)
-                restaurant.img_cover_hover.save(f'{restaurant.pk}_cover_hover.{ext}', File(temp_file))
+                restaurant.img_cover_hover.save(f'{restaurant.pk}_cover_hover.{ext}',
+                                                File(temp_file))
                 restaurant.update_from_foodfly()
 
     def update_or_create_by_foodfly_id(self, foodfly_id):
@@ -134,6 +153,7 @@ class Restaurant(models.Model):
     img_cover_hover = models.ImageField('커버 이미지(hover)', upload_to='restaurant', blank=True)
 
     min_order_price = models.PositiveIntegerField('최소 주문금액', default=0)
+    delivery_price = models.PositiveIntegerField('배달팁', default=0)
     avg_delivery_time = models.TimeField('평균 배달시간', default=datetime.time(00, 00))
 
     restaurant_info = models.TextField('매장소개', blank=True)
