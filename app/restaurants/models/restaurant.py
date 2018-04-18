@@ -1,13 +1,11 @@
-import datetime
 import re
 import time
 
 import requests
+import subprocess
 from bs4 import BeautifulSoup
 from django.core.files import File
 from django.db import models, transaction
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
 from selenium import webdriver
 
 from utils.file import download, get_buffer_ext
@@ -50,7 +48,7 @@ class RestaurantCategory(models.Model):
         verbose_name_plural = f'{verbose_name} 목록'
 
     def __str__(self):
-        return self.name
+        return f'{self.pk}: {self.name}'
 
 
 class RestaurantTag(models.Model):
@@ -61,7 +59,7 @@ class RestaurantTag(models.Model):
         verbose_name_plural = f'{verbose_name} 목록'
 
     def __str__(self):
-        return self.name
+        return f'{self.pk}: {self.name}'
 
 
 class RestaurantOrderType(models.Model):
@@ -72,7 +70,7 @@ class RestaurantOrderType(models.Model):
         verbose_name_plural = f'{verbose_name} 목록'
 
     def __str__(self):
-        return self.name
+        return f'{self.pk}: {self.name}'
 
 
 class RestaurantManager(models.Manager):
@@ -84,7 +82,12 @@ class RestaurantManager(models.Manager):
     def update_category(self, category: RestaurantCategory, test=False):
         print(f'- {category.name} update')
         url = f'http://www.foodfly.co.kr/restaurants?sortby=fee&category_{category.name}=on'
-        client = webdriver.Chrome('/usr/local/bin/chromedriver')
+        chromedriver_location = subprocess.run(['which', 'chromedriver'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        options.add_argument('window-size=1920x1080')
+        options.add_argument('disable-gpu')
+        client = webdriver.Chrome(chromedriver_location, chrome_options=options)
         client.get(url)
         height = 0
         time.sleep(1)
@@ -105,8 +108,10 @@ class RestaurantManager(models.Manager):
             pk = re.match(r'^.*/(?P<pk>\d+)', a.get('href', '')).group('pk').strip()
             name = a.select_one('.restaurant_info .restaurant_name').get_text(strip=True)
             delivery_price = a.select(
-                '.restaurant_info > span')[-1].get_text(strip=True)[:-2].replace(',', '')
-            a.select_one('.restaurant_info > p:last-child').get_text(strip=True)
+                '.restaurant_info > span')[-1].get_text(strip=True)[:-2] \
+                .replace(':', '') \
+                .replace(',', '') \
+                .strip()
             bg = a.select_one('.restaurant_box span.restaurant_box_bg').get_text(strip=True)
             bg_hover = a.select_one('.restaurant_box span.restaurant_box_bg_hover').get_text(
                 strip=True)
@@ -131,8 +136,9 @@ class RestaurantManager(models.Manager):
                 temp_file = download(bg_hover_url)
                 ext = get_buffer_ext(temp_file)
                 restaurant.img_cover_hover.save(f'{restaurant.pk}_cover_hover.{ext}',
-                                                File(temp_file))
+                                                    File(temp_file))
                 restaurant.update_from_foodfly()
+        client.quit()
 
     def update_or_create_by_foodfly_id(self, foodfly_id):
         url = f'http://www.foodfly.co.kr/restaurants/show/{foodfly_id}'
@@ -154,7 +160,7 @@ class Restaurant(models.Model):
 
     min_order_price = models.PositiveIntegerField('최소 주문금액', default=0)
     delivery_price = models.PositiveIntegerField('배달팁', default=0)
-    avg_delivery_time = models.TimeField('평균 배달시간', default=datetime.time(00, 00))
+    avg_delivery_time = models.PositiveIntegerField('평균 배달시간(분)', default=0)
 
     restaurant_info = models.TextField('매장소개', blank=True)
     origin_info = models.TextField('원산지 정보', blank=True)
@@ -184,9 +190,10 @@ class Restaurant(models.Model):
     class Meta:
         verbose_name = '음식점'
         verbose_name_plural = f'{verbose_name} 목록'
+        ordering = ('-pk',)
 
     def __str__(self):
-        return self.name
+        return f'{self.pk}: {self.name}'
 
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
@@ -225,6 +232,7 @@ class Restaurant(models.Model):
 
             self.address = sub_info_dict.get('주소', '')
             self.min_order_price = sub_info_dict.get('최소주문금액', 0)[:-2].replace(',', '').strip()
+            self.avg_delivery_time = sub_info_dict.get('평균배달 소요시간', '')[:-2].strip()
             tags = []
             for tag_name in sub_info_dict.get('분류', '').split(','):
                 tag, _ = RestaurantTag.objects.get_or_create(name=tag_name.strip())
@@ -248,13 +256,3 @@ class Restaurant(models.Model):
             category_list_soup = menu_container.select('.menu-category')
             for category_soup in category_list_soup:
                 MenuCategory.objects.update_or_create_from_soup(self, category_soup)
-
-
-@receiver(post_delete, sender=Restaurant)
-def delete_img(sender, instance, created, **kwargs):
-    if instance.img_cover:
-        instance.img_cover.delete()
-    if instance.img_cover_hover:
-        instance.img_cover_hover.delete()
-    if instance.img_info:
-        instance.img_info.delete()

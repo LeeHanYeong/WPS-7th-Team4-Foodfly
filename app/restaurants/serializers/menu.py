@@ -13,7 +13,6 @@ class MenuSerializer(serializers.ModelSerializer):
         model = Menu
         fields = (
             'pk',
-            'category',
             'name',
             'info',
             'img',
@@ -28,7 +27,6 @@ class MenuCategorySerializer(serializers.ModelSerializer):
         model = MenuCategory
         fields = (
             'pk',
-            'restaurant',
             'name',
 
             'menus',

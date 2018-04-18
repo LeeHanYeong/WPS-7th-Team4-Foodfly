@@ -11,11 +11,22 @@ from .models import (
 )
 
 
+class RestaurantCategoryAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
+    list_display_links = ('name',)
+
+
 class RestaurantAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'pk',
+        'name',
+        'min_order_price',
+        'delivery_price',
+        # 'avg_delivery_time',
+    )
 
 
-admin.site.register(RestaurantCategory)
+admin.site.register(RestaurantCategory, RestaurantCategoryAdmin)
 admin.site.register(RestaurantOrderType)
 admin.site.register(RestaurantTag)
 admin.site.register(Restaurant, RestaurantAdmin)

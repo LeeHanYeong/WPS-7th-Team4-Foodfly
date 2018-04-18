@@ -18,12 +18,17 @@ __all__ = (
 
 
 class RestaurantCategorySerializer(serializers.ModelSerializer):
+    name_display = serializers.CharField(source='get_name_display', read_only=True)
+
     class Meta:
         model = RestaurantCategory
         fields = (
             'pk',
             'name',
+            'name_display',
         )
+
+
 
 
 class RestaurantTagSerializer(serializers.ModelSerializer):
@@ -45,9 +50,9 @@ class RestaurantOrderTypeSerializer(serializers.ModelSerializer):
 
 
 class RestaurantListSerializer(serializers.ModelSerializer):
-    categories = RestaurantCategorySerializer(many=True, read_only=True)
     tags = RestaurantTagSerializer(many=True, read_only=True)
-    order_types = RestaurantOrderTypeSerializer(many=True, read_only=True)
+    categories = serializers.StringRelatedField(many=True)
+    order_types = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Restaurant
@@ -55,21 +60,32 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             'pk',
             'name',
             'address',
+            'img_cover',
+            'img_cover_hover',
             'min_order_price',
+            'delivery_price',
             'avg_delivery_time',
-            'restaurant_info',
-            'origin_info',
 
-            'categories',
             'tags',
+            'categories',
             'order_types',
         )
 
 
 class RestaurantRetrieveSerializer(RestaurantListSerializer):
+    categories = RestaurantCategorySerializer(many=True, read_only=True)
+    order_types = RestaurantOrderTypeSerializer(many=True, read_only=True)
+
     menu_categories = MenuCategorySerializer(many=True, read_only=True)
 
     class Meta(RestaurantListSerializer.Meta):
         fields = RestaurantListSerializer.Meta.fields + (
+            'restaurant_info',
+            'origin_info',
+            'img_info',
+
+            'categories',
+            'order_types',
+
             'menu_categories',
         )

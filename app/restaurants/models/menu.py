@@ -1,4 +1,7 @@
+from django.core.files import File
 from django.db import models, transaction
+
+from utils.file import download, get_buffer_ext
 
 
 class MenuCategoryManager(models.Manager):
@@ -48,7 +51,7 @@ class MenuManager(models.Manager):
         photo = photo_soup.get('src') if photo_soup else ''
         price = soup.select_one('.col-price > .price').get_text(strip=True).replace(',', '')
 
-        self.update_or_create(
+        menu, _ = self.update_or_create(
             category=category,
             name=name,
             defaults={
@@ -56,6 +59,10 @@ class MenuManager(models.Manager):
                 'price': price,
             }
         )
+        if photo:
+            temp_file = download(photo)
+            ext = get_buffer_ext(temp_file)
+            menu.img.save(f'{menu.pk}.{ext}', File(temp_file))
 
 
 class Menu(models.Model):

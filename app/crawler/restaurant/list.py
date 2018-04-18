@@ -37,13 +37,17 @@ for a in a_list:
     bg_hover_url = p.match(bg_hover).group('url')
 
     name = a.select_one('.restaurant_info .restaurant_name').get_text(strip=True)
-    delivery_price = a.select('.restaurant_info > span')[-1].get_text(strip=True)[:-2].replace(',', '')
-    print(pk)
-    print(name)
-    print(bg_url)
-    print(bg_hover_url)
+    delivery_price = a.select(
+        '.restaurant_info > span')[-1].get_text(strip=True)[:-2] \
+        .replace(':', '') \
+        .replace(',', '') \
+        .strip()
+    # print(pk)
+    # print(name)
+    # print(bg_url)
+    # print(bg_hover_url)
     print(delivery_price)
-    print('')
+    # print('')
 
 
 # if not os.path.exists('detail.html'):
