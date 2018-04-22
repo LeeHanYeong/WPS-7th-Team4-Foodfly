@@ -1,11 +1,14 @@
 import re
+import subprocess
 import time
 
 import requests
-import subprocess
 from bs4 import BeautifulSoup
+from django.conf import settings
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 from django.core.files import File
-from django.db import models, transaction
+from django.db import transaction
 from selenium import webdriver
 
 from utils.file import download, get_buffer_ext
@@ -82,7 +85,9 @@ class RestaurantManager(models.Manager):
     def update_category(self, category: RestaurantCategory, test=False):
         print(f'- {category.name} update')
         url = f'http://www.foodfly.co.kr/restaurants?sortby=fee&category_{category.name}=on'
-        chromedriver_location = subprocess.run(['which', 'chromedriver'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+        chromedriver_location = subprocess.run(['which', 'chromedriver'],
+                                               stdout=subprocess.PIPE).stdout.decode(
+            'utf-8').strip()
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         options.add_argument('window-size=1920x1080')
@@ -136,7 +141,7 @@ class RestaurantManager(models.Manager):
                 temp_file = download(bg_hover_url)
                 ext = get_buffer_ext(temp_file)
                 restaurant.img_cover_hover.save(f'{restaurant.pk}_cover_hover.{ext}',
-                                                    File(temp_file))
+                                                File(temp_file))
                 restaurant.update_from_foodfly()
         client.quit()
 
@@ -155,6 +160,9 @@ class Restaurant(models.Model):
     id = models.IntegerField('푸드플라이 레스토랑 ID', primary_key=True, unique=True)
     name = models.CharField('레스토랑명', max_length=100)
     address = models.CharField('주소', max_length=200, blank=True)
+    point = models.PointField('좌표', srid=4326, blank=True, null=True)
+    place_id = models.CharField('구글 Place ID', max_length=100, blank=True)
+
     img_cover = models.ImageField('커버 이미지', upload_to='restaurant', blank=True)
     img_cover_hover = models.ImageField('커버 이미지(hover)', upload_to='restaurant', blank=True)
 
@@ -194,6 +202,37 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return f'{self.pk}: {self.name}'
+
+    def save(self, *args, **kwargs):
+        if self.address and not self.point:
+            self._get_point_from_geocoding(save=False)
+        super().save(*args, **kwargs)
+
+    def _get_point_from_geocoding(self, save=True):
+        import googlemaps
+        gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_GEOCODING_API_KEY)
+        result = gmaps.geocode(self.address)
+        if result:
+            if 'place_id' in result[0]:
+                self.place_id = result[0]['place_id']
+            self.point = Point(
+                result[0]['geometry']['location']['lat'],
+                result[0]['geometry']['location']['lng']
+            )
+            if save:
+                self.save()
+
+    @property
+    def latitude(self):
+        if not self.point:
+            self._get_point_from_geocoding()
+        return self.point.coords[0]
+    
+    @property
+    def longitude(self):
+        if not self.point:
+            self._get_point_from_geocoding()
+        return self.point.coords[1]
 
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in self._meta.fields]

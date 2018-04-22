@@ -2,6 +2,7 @@
 
 import django.contrib.auth.models
 import django.contrib.auth.validators
+from django.contrib.postgres.operations import CreateExtension
 from django.db import migrations, models
 import django.utils.timezone
 
@@ -15,6 +16,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        CreateExtension('postgis'),
         migrations.CreateModel(
             name='User',
             fields=[

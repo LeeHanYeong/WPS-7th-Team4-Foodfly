@@ -29,8 +29,6 @@ class RestaurantCategorySerializer(serializers.ModelSerializer):
         )
 
 
-
-
 class RestaurantTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = RestaurantTag
@@ -69,6 +67,9 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             'tags',
             'categories',
             'order_types',
+
+            'latitude',
+            'longitude',
         )
 
 

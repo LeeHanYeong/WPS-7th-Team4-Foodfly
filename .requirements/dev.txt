@@ -1,4 +1,5 @@
 Django
+django-cleanup
 django-cors-headers
 django-extensions
 django-filter
@@ -7,6 +8,7 @@ django-phonenumber-field
 djangorestframework
 djangorestframework-camel-case
 drf-writable-nested
+googlemaps
 Pillow
 psycopg2-binary
 requests

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.gis.db import models
+from mapwidgets import GooglePointFieldWidget
 
 from .models import (
     RestaurantCategory,
@@ -24,6 +26,11 @@ class RestaurantAdmin(admin.ModelAdmin):
         'delivery_price',
         # 'avg_delivery_time',
     )
+    formfield_overrides = {
+        models.PointField: {
+            'widget': GooglePointFieldWidget
+        }
+    }
 
 
 admin.site.register(RestaurantCategory, RestaurantCategoryAdmin)
