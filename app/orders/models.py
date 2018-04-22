@@ -13,16 +13,30 @@ class Order(models.Model):
     address2 = models.CharField('주소2', max_length=100)
     phone_number = PhoneNumberField('전화번호')
     note = models.TextField('주문 요구사항', blank=True)
+    created_at = models.DateTimeField('생성일자', auto_now_add=True)
 
     def __str__(self):
         return f'주문 (PK: {self.pk})'
 
+    @property
+    def amount(self):
+        return sum([order_menu.amount for order_menu in self.menus.all()])
+
 
 class OrderMenu(models.Model):
-    order = models.ForeignKey(Order, verbose_name='주문', on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order,
+        verbose_name='주문',
+        on_delete=models.CASCADE,
+        related_name='menus',
+    )
     menu = models.ForeignKey(
         Menu, verbose_name='메뉴', on_delete=models.SET_NULL, blank=True, null=True)
     quantity = models.IntegerField('주문 수량', default=1)
 
     def __str__(self):
         return f'주문 메뉴 (PK: {self.pk})'
+
+    @property
+    def amount(self):
+        return self.menu.price * self.quantity

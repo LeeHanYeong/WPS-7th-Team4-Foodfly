@@ -2,12 +2,12 @@ from django.urls import reverse, resolve
 from rest_framework import status
 from rest_framework.test import APITestCase
 from .models import Order
-from .apis import OrderListView
+from .apis import OrderListCreateView
 
 
 class OrderListTest(APITestCase):
     MODEL = Order
-    VIEW = OrderListView
+    VIEW = OrderListCreateView
     URL = '/orders/'
     VIEW_NAME = 'orders:order-list'
 
