@@ -12,6 +12,8 @@ from django.db import transaction
 from selenium import webdriver
 
 from utils.file import download, get_buffer_ext
+from ..exceptions import GeocodingNotFoundException, FoodflyPointNotFoundException, \
+    RestaurantPointNotFoundError
 
 __all__ = (
     'RestaurantCategory',
@@ -203,9 +205,9 @@ class Restaurant(models.Model):
     def __str__(self):
         return f'{self.pk}: {self.name}'
 
-    def save(self, *args, **kwargs):
-        if self.address and not self.point:
-            self._get_point_from_geocoding(save=False)
+    def save(self, save_point=True, *args, **kwargs):
+        if self.address and not self.point and save_point:
+            self._get_point(save=False)
         super().save(*args, **kwargs)
 
     def _get_point_from_geocoding(self, save=True):
@@ -221,17 +223,44 @@ class Restaurant(models.Model):
             )
             if save:
                 self.save()
+        else:
+            raise GeocodingNotFoundException(self.address)
+
+    def _get_point_from_foodfly(self, save=True):
+        url = f'http://www.foodfly.co.kr/restaurants/show/{self.id}'
+        soup = BeautifulSoup(requests.get(url).text, 'lxml')
+        map_src = soup.select_one('#restaurant-map > img').get('src')
+        p = re.compile(r'markers=(?P<lng>.*?),(?P<lat>.*?)&')
+        m = p.search(map_src)
+        if m:
+            self.point = Point(
+                float(m.group('lat')),
+                float(m.group('lng'))
+            )
+            if save:
+                self.save()
+        else:
+            raise FoodflyPointNotFoundException(self)
+
+    def _get_point(self, save=True):
+        try:
+            self._get_point_from_foodfly(save=save)
+        except FoodflyPointNotFoundException:
+            try:
+                self._get_point_from_geocoding(save=save)
+            except GeocodingNotFoundException:
+                raise RestaurantPointNotFoundError(self)
 
     @property
     def latitude(self):
         if not self.point:
-            self._get_point_from_geocoding()
+            self._get_point()
         return self.point.coords[0]
-    
+
     @property
     def longitude(self):
         if not self.point:
-            self._get_point_from_geocoding()
+            self._get_point()
         return self.point.coords[1]
 
     def get_fields(self):
