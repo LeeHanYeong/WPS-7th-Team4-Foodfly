@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('members/', include('members.urls')),
     path('', include('restaurants.urls')),
+    path('orders/', include('orders.urls')),
 ]
 urlpatterns += static(
     settings.MEDIA_URL,

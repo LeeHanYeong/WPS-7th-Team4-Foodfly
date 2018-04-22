@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'mapwidgets',
 
     'members',
+    'orders',
     'restaurants',
 ]
 
