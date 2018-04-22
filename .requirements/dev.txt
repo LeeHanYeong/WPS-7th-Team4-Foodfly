@@ -5,6 +5,7 @@ django-extensions
 django-filter
 django-json-secrets
 django-phonenumber-field
+django-map-widgets
 djangorestframework
 djangorestframework-camel-case
 drf-writable-nested

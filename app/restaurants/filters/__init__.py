@@ -1,4 +1,6 @@
+from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+
 from django_filters import rest_framework as filters, Filter
 
 from ..models import Restaurant
@@ -24,5 +26,7 @@ class RestaurantFilter(filters.FilterSet):
         distance = self.request.query_params.get('distance')
         if lat and lng and distance:
             point = Point(float(lat), float(lng))
-            return parent.filter(point__distance_lte=(point, distance))
+            return parent\
+                .filter(point__distance_lte=(point, distance))\
+                .annotate(distance=Distance('point', point))
         return super().qs

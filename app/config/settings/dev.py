@@ -12,4 +12,4 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+MEDIA_ROOT = os.path.join(os.path.dirname(ROOT_DIR), 'foodfly_media')

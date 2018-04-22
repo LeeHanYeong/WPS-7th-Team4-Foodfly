@@ -51,6 +51,7 @@ class RestaurantListSerializer(serializers.ModelSerializer):
     tags = RestaurantTagSerializer(many=True, read_only=True)
     categories = serializers.StringRelatedField(many=True)
     order_types = serializers.StringRelatedField(many=True)
+    distance = serializers.FloatField(source='distance.m', read_only=True)
 
     class Meta:
         model = Restaurant
@@ -68,6 +69,7 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             'categories',
             'order_types',
 
+            'distance',
             'latitude',
             'longitude',
         )
