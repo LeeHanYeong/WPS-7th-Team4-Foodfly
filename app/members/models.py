@@ -9,6 +9,12 @@ __all__ = (
 
 
 class UserManager(DjangoUserManager):
+    def create_dummy_user(self):
+        return self.create_user(
+            username='DummyUser',
+            email=''
+        )
+
     def create_email_user(self, email, password, **extra_fields):
         return self.create_user(
             username=email,

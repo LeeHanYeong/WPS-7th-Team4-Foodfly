@@ -157,6 +157,12 @@ class RestaurantManager(models.Manager):
             restaurant, _ = self.get_or_create(id=foodfly_id)
             restaurant.update_from_soup(soup)
 
+    def create_mock(self):
+        return self.create(
+            id=1234,
+            name='Mock restaurant',
+        )
+
 
 class Restaurant(models.Model):
     id = models.IntegerField('푸드플라이 레스토랑 ID', primary_key=True, unique=True)

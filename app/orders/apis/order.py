@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 
-from .models import Order
-from .serializers import OrderSerializer, OrderCreateSerializer
+from ..models import Order
+from ..serializers import OrderSerializer, OrderCreateSerializer
 
 __all__ = (
     'OrderListCreateView',

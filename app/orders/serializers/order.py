@@ -4,7 +4,7 @@ from rest_framework import serializers
 from members.serializers import UserSerializer
 from restaurants.models import Restaurant, Menu
 from restaurants.serializers import RestaurantListSerializer, MenuSerializer
-from .models import Order, OrderMenu
+from ..models import Order, OrderMenu
 
 
 class OrderMenuSerializer(WritableNestedModelSerializer):

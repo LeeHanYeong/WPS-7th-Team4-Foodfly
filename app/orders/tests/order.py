@@ -2,8 +2,13 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from utils.test_mixins import ReverseResolveTestMixin
-from .apis import OrderListCreateView
-from .models import Order
+from ..apis import OrderListCreateView
+from ..models import Order
+
+__all__ = (
+    'OrderListTest',
+    'OrderCreateTest',
+)
 
 
 class OrderListTest(ReverseResolveTestMixin, APITestCase):
