@@ -11,13 +11,20 @@ __all__ = (
 
 
 class OrderReviewManager(models.Manager):
-    def create_mock(self, user, order):
-        return self.create(
+    def create_mock(self, user, order, images=None):
+        review = self.create(
             user=user,
             order=order,
             score=1,
             comment='Mock comment'
         )
+        if images:
+            for image in images:
+                OrderReviewImage.objects.create_mock(
+                    review=review,
+                    image=image
+                )
+        return review
 
 
 class OrderReview(CreatedMixin, models.Model):
@@ -39,6 +46,17 @@ class OrderReview(CreatedMixin, models.Model):
     objects = OrderReviewManager()
 
 
+class OrderReviewImageManager(models.Manager):
+    def create_mock(self, review, image):
+        review_image = self.create(
+            review=review,
+        )
+        review_image.image.save('mock.jpg', image)
+        return review_image
+
+
 class OrderReviewImage(CreatedMixin, models.Model):
     review = models.ForeignKey(OrderReview, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='review')
+
+    objects = OrderReviewImageManager()

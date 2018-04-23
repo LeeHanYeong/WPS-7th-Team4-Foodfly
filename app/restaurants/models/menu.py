@@ -1,3 +1,5 @@
+from random import randint
+
 from django.core.files import File
 from django.db import models, transaction
 
@@ -23,6 +25,12 @@ class MenuCategoryManager(models.Manager):
             menu_soup_list = soup.select('.row-menu')
             for menu_soup in menu_soup_list:
                 Menu.objects.update_or_create_from_soup(category, menu_soup)
+
+    def create_mock(self, restaurant):
+        return self.create(
+            restaurant=restaurant,
+            name='Mock menu category'
+        )
 
 
 class MenuCategory(models.Model):
@@ -63,6 +71,13 @@ class MenuManager(models.Manager):
             temp_file = download(photo)
             ext = get_buffer_ext(temp_file)
             menu.img.save(f'{menu.pk}.{ext}', File(temp_file))
+
+    def create_mock(self, category):
+        return self.create(
+            category=category,
+            name='Mock menu name',
+            price=randint(1, 10) * 1000
+        )
 
 
 class Menu(models.Model):

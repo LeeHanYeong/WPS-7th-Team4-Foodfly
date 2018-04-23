@@ -158,8 +158,10 @@ class RestaurantManager(models.Manager):
             restaurant.update_from_soup(soup)
 
     def create_mock(self):
+        last_instance = self.order_by('-pk').first()
+        last_pk = last_instance.pk if last_instance else 0
         return self.create(
-            id=1234,
+            id=last_pk + 1,
             name='Mock restaurant',
         )
 

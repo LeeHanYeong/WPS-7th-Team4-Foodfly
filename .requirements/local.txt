@@ -1,4 +1,5 @@
 appnope==0.1.0
+attrs==17.4.0
 Babel==2.5.3
 backcall==0.1.0
 beautifulsoup4==4.6.0
@@ -23,15 +24,20 @@ ipython==6.3.1
 ipython-genutils==0.2.0
 jedi==0.11.1
 lxml==4.2.1
+more-itertools==4.1.0
 parso==0.1.1
 pexpect==4.4.0
 phonenumberslite==8.9.3
 pickleshare==0.7.4
 Pillow==5.1.0
+pluggy==0.6.0
 prompt-toolkit==1.0.15
 psycopg2-binary==2.7.4
 ptyprocess==0.5.2
+py==1.5.3
 Pygments==2.2.0
+pytest==3.5.0
+pytest-django==3.2.1
 python-magic==0.4.15
 pytz==2018.3
 requests==2.18.4

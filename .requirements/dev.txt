@@ -12,5 +12,6 @@ drf-writable-nested
 googlemaps
 Pillow
 psycopg2-binary
+pytest-django
 requests
 selenium

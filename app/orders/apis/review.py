@@ -6,6 +6,11 @@ from ..models import Order, OrderReview
 from ..serializers import OrderReviewCreateSerializer, OrderReviewSerializer, \
     OrderReviewUpdateSerializer
 
+__all__ = (
+    'OrderReviewListCreateView',
+    'OrderReviewRetrieveUpdateDestroyView',
+)
+
 
 class OrderReviewListCreateView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -36,7 +41,7 @@ class OrderReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
 
     def get_queryset(self):
         filter = {field: self.kwargs[field] for field in self.query_fields if self.kwargs[field]}
-        return super().get_queryset().filter(**filter)
+        return OrderReview.objects.filter(**filter)
 
     def get_serializer_class(self):
         if self.request.method == 'PATCH':

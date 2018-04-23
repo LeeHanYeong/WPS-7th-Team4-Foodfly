@@ -9,10 +9,12 @@ __all__ = (
 
 
 class UserManager(DjangoUserManager):
-    def create_dummy_user(self):
+    def create_mock(self):
+        last_user = self.order_by('-pk').first()
+        last_pk = last_user.pk if last_user else 0
         return self.create_user(
-            username='DummyUser',
-            email=''
+            username=f'Mock username{last_pk + 1}',
+            email=f'Mock email{last_pk + 1}',
         )
 
     def create_email_user(self, email, password, **extra_fields):

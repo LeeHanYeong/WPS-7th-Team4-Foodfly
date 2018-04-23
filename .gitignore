@@ -4,6 +4,7 @@
 /.secrets
 **/crawler/**/*.html
 **/crawler/**/*.pickle
+.pytest_cache/
 
 
 # Created by https://www.gitignore.io/api/git,linux,macos,django,python,pycharm+all

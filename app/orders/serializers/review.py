@@ -78,7 +78,7 @@ class OrderReviewUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderReview
         fields = (
-            'pk'
+            'pk',
             'score',
             'comment',
             'delete_image_pk_list',
@@ -86,7 +86,7 @@ class OrderReviewUpdateSerializer(serializers.ModelSerializer):
         )
 
     def update(self, instance, validated_data):
-        images = validated_data.pop('images')
+        images = validated_data.pop('images', [])
         delete_image_pk_list = validated_data.pop('delete_image_pk_list')
         with transaction.atomic():
             instance = super().update(instance, validated_data)
