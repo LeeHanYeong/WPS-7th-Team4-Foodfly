@@ -63,6 +63,9 @@ class OrderReviewListTest(ReverseResolveTestMixin, APITestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), num_reviews)
+        # 이미지 삭제를 위한 delete()
+        for ori in OrderReviewImage.objects.all():
+            ori.image.delete()
 
 
 class OrderReviewUpdateTest(APITestCase):
@@ -90,3 +93,7 @@ class OrderReviewUpdateTest(APITestCase):
         for image_data in response.data['images']:
             self.assertNotIn(image_data['pk'], delete_image_pk_list)
         self.assertEqual(len(response.data['images']), len(image_pk_list) - len(delete_image_pk_list))
+
+        # 이미지 삭제를 위한 delete()
+        for ori in OrderReviewImage.objects.all():
+            ori.image.delete()
