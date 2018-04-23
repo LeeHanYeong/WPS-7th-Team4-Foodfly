@@ -72,7 +72,7 @@ class OrderReviewUpdateTest(APITestCase):
     MODEL = OrderReview
     VIEW = OrderReviewRetrieveUpdateDestroyView
     URL = '/orders/{order__pk}/reviews/{pk}/'
-    VIEW_NAME = 'orders:review-list'
+    VIEW_NAME = 'orders:review-detail'
 
     def test_delete_images(self):
         review = create_image_reviews(1)[0]
@@ -86,7 +86,7 @@ class OrderReviewUpdateTest(APITestCase):
         self.client.force_authenticate(user=review.user)
         response = self.client.patch(
             self.URL.format(
-                order__pk=review.pk,
+                order__pk=review.order.pk,
                 pk=review.pk,
             ), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
