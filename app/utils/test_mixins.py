@@ -1,6 +1,5 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse, resolve
-from rest_framework.test import APITestCase
 
 
 class ReverseResolveTestMixin(object):

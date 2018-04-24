@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 from utils.model_mixins import CreatedMixin
 from .order import Order
@@ -35,10 +37,10 @@ class OrderReview(CreatedMixin, models.Model):
         blank=True,
         null=True,
     )
-    order = models.ForeignKey(
+    order = models.OneToOneField(
         Order,
         on_delete=models.CASCADE,
-        related_name='reviews',
+        related_name='review',
     )
     score = models.PositiveSmallIntegerField(default=5)
     comment = models.TextField()
@@ -60,3 +62,9 @@ class OrderReviewImage(CreatedMixin, models.Model):
     image = models.ImageField(upload_to='review')
 
     objects = OrderReviewImageManager()
+
+
+@receiver(pre_delete, sender=OrderReviewImage)
+def delete_image(sender, instance, **kwargs):
+    print('signal delete image')
+    instance.image.delete()

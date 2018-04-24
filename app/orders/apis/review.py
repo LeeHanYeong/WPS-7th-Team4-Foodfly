@@ -13,17 +13,9 @@ __all__ = (
 
 
 class OrderReviewListCreateView(generics.ListCreateAPIView):
+    queryset = OrderReview.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    query_fields = ('order__pk',)
-
-    def get_order(self):
-        order_pk = self.kwargs['order__pk']
-        order = get_object_or_404(Order, pk=order_pk)
-        return order
-
-    def get_queryset(self):
-        filter = {field: self.kwargs[field] for field in self.query_fields if self.kwargs[field]}
-        return OrderReview.objects.filter(**filter)
+    filter_fields = ('order',)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -31,17 +23,10 @@ class OrderReviewListCreateView(generics.ListCreateAPIView):
         elif self.request.method == 'POST':
             return OrderReviewCreateSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(order=self.get_order())
-
 
 class OrderReviewRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = OrderReview.objects.all()
     permission_classes = (IsUserOrReadOnly,)
-    query_fields = ('order__pk',)
-
-    def get_queryset(self):
-        filter = {field: self.kwargs[field] for field in self.query_fields if self.kwargs[field]}
-        return OrderReview.objects.filter(**filter)
 
     def get_serializer_class(self):
         if self.request.method == 'PATCH':

@@ -8,6 +8,6 @@ from .apis import (
 app_name = 'orders'
 urlpatterns = [
     path('', OrderListCreateView.as_view(), name='order-list'),
-    path('<int:order__pk>/reviews/', OrderReviewListCreateView.as_view(), name='review-list'),
-    path('<int:order__pk>/reviews/<int:pk>/', OrderReviewRetrieveUpdateDestroyView.as_view(), name='review-detail'),
+    path('reviews/', OrderReviewListCreateView.as_view(), name='review-list'),
+    path('reviews/<int:pk>/', OrderReviewRetrieveUpdateDestroyView.as_view(), name='review-detail'),
 ]
