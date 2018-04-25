@@ -3,6 +3,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import get_object_or_404
 
+from members.serializers import UserSerializer
+from ..serializers import OrderSerializer
 from ..models import OrderReview, OrderReviewImage, Order
 
 __all__ = (
@@ -25,6 +27,8 @@ class OrderReviewImageSerializer(serializers.ModelSerializer):
 
 class OrderReviewSerializer(serializers.ModelSerializer):
     images = OrderReviewImageSerializer(many=True)
+    user = UserSerializer()
+    order = OrderSerializer()
 
     class Meta:
         model = OrderReview
@@ -39,7 +43,7 @@ class OrderReviewSerializer(serializers.ModelSerializer):
 
 
 class OrderReviewCreateSerializer(serializers.ModelSerializer):
-    order_pk = serializers.IntegerField()
+    orderPk = serializers.IntegerField()
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
         write_only=True,
@@ -52,22 +56,22 @@ class OrderReviewCreateSerializer(serializers.ModelSerializer):
         model = OrderReview
         fields = (
             'pk',
-            'order_pk',
+            'orderPk',
             'user',
             'score',
             'comment',
             'images',
         )
 
-    def validate_order_pk(self, pk):
+    def validate_orderPk(self, pk):
         order = get_object_or_404(Order, pk=pk)
-        if order.user != self.request.user:
+        if order.user != self.context['user']:
             raise APIException('주문자가 아닙니다')
         return pk
 
     def create(self, validated_data):
         images = validated_data.pop('images')
-        order = get_object_or_404(Order, pk=validated_data.pop('order_pk'))
+        order = get_object_or_404(Order, pk=validated_data.pop('orderPk'))
         validated_data['order'] = order
         with transaction.atomic():
             review = super().create(validated_data)
