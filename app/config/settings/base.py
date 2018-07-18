@@ -87,10 +87,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_cleanup',
     'django_extensions',
+    'drf_yasg',
+    'mapwidgets',
     'rest_framework',
     'rest_framework.authtoken',
     'phonenumber_field',
-    'mapwidgets',
 
     'members',
     'orders',

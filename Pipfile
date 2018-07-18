@@ -22,6 +22,12 @@ pillow = "*"
 pytest-django = "*"
 requests = "*"
 selenium = "*"
+drf-yasg = "*"
+python-magic = "*"
+"beautifulsoup4" = "*"
+lxml = "*"
+swagger-spec-validator = "*"
+flex = "*"
 
 [dev-packages]
 ipython = "*"
