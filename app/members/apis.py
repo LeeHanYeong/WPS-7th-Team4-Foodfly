@@ -13,11 +13,28 @@ __all__ = (
 
 
 class SignupView(generics.CreateAPIView):
+    """
+    name:
+    Signup
+
+    title:
+    Signup
+    """
     queryset = User.objects.all()
     serializer_class = SignupSerializer
 
 
 class AuthTokenView(APIView):
+    """
+    post:
+    AuthTokenPost
+
+    title:
+    AuthToken
+
+    name:
+    AuthToken
+    """
     def post(self, request):
         serializer = EmailAuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
