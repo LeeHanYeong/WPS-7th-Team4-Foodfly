@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+coverage = "*"
+django = "*"
+django-cleanup = "*"
+django-cors-headers = "*"
+django-extensions = "*"
+django-filter = "*"
+django-json-secrets = "*"
+django-phonenumber-field = "*"
+django-map-widgets = "*"
+djangorestframework = "*"
+djangorestframework-camel-case = "*"
+drf-writable-nested = "*"
+googlemaps = "*"
+pillow = "*"
+"psycopg2-binary" = "*"
+pytest-django = "*"
+requests = "*"
+selenium = "*"
+
+[dev-packages]
+ipython = "*"
+django-extensions = "*"
+
+[requires]
+python_version = "3.6"
