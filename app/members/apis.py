@@ -14,9 +14,6 @@ __all__ = (
 
 class SignupView(generics.CreateAPIView):
     """
-    name:
-    Signup
-
     title:
     Signup
     """
@@ -30,9 +27,6 @@ class AuthTokenView(APIView):
     AuthTokenPost
 
     title:
-    AuthToken
-
-    name:
     AuthToken
     """
     def post(self, request):

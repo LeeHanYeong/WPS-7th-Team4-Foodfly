@@ -1,7 +1,7 @@
 __all__ = (
     'GeocodingNotFoundException',
     'FoodflyPointNotFoundException',
-    'PointNotFoundError',
+    'RestaurantPointNotFoundError',
 )
 
 

@@ -22,7 +22,7 @@ class RestaurantListView(generics.ListAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantListSerializer
     pagination_class = Pagination20
-    filter_class = RestaurantFilter
+    filterset_class = RestaurantFilter
     search_fields = ('name', 'tags__name')
     ordering_fields = ('min_order_price', 'delivery_price', 'avg_delivery_time')
 

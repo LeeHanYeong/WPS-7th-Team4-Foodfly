@@ -14,7 +14,7 @@ __all__ = (
 class OrderReviewListCreateView(generics.ListCreateAPIView):
     queryset = OrderReview.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_fields = ('order', 'user',)
+    filterset_fields = ('order', 'user',)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
