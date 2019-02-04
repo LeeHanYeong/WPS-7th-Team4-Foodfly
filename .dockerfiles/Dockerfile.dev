@@ -1,0 +1,10 @@
+FROM            azelf/foodfly:base
+MAINTAINER      dev@lhy.kr
+
+ENV             BUILD_MODE              dev
+ENV             DJANGO_SETTINGS_MODULE  config.settings.${BUILD_MODE}
+
+COPY            .   /srv/project
+
+RUN             mkdir /var/log/django
+
